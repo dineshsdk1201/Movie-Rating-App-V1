@@ -1,92 +1,97 @@
-import { useState } from "react";
 import "./index.css";
-const messages = [
-  "Learn React ⚛️",
-  "Apply for jobs 💼",
-  "Invest your new income 🤑",
+import { useState } from "react";
+const initialItems = [
+  { id: 1, description: "Passports", quantity: 2, packed: false },
+  { id: 2, description: "Socks", quantity: 12, packed: true },
 ];
 export default function App() {
-  const [step, setStep] = useState(1);
-  const [isOpen, setIsOpen] = useState(true);
-  console.log(step);
-  const msg = messages;
   return (
-    <div>
-      <Container
-        msg={msg}
-        step={step}
-        setStep={setStep}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-      />
+    <div className="app">
+      <Header />
+      <Form />
+      <PackagesList />
+      <Statistics />
     </div>
   );
 }
-
-function Container({ step, msg, setStep, isOpen, setIsOpen }) {
-  console.log(step);
+function Header() {
   return (
-    <div>
-      <button className="close" onClick={() => setIsOpen((s) => !s)}>
-        ❌
-      </button>
-      {isOpen && (
-        <Steps
-          step={step}
-          msg={msg}
-          setStep={setStep}
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-        />
-      )}
-    </div>
-  );
-}
-
-function Steps({ step, msg, setStep, isOpen, setIsOpen }) {
-  console.log(step);
-  return (
-    <div className="container">
-      <div className="steps">
-        <h1 className={`${step >= 1 ? "active" : ""}`}>1</h1>
-        <h1 className={`${step >= 2 ? "active" : ""}`}>2</h1>
-        <h1 className={`${step >= 3 ? "active" : ""}`}>3</h1>
+    <>
+      <div>
+        <h1>🌴 Far Away 💼</h1>
       </div>
-      <Text msg={msg} step={step} />
-      <Button step={step} setStep={setStep} />
-    </div>
+    </>
   );
 }
+function Form() {
+  const [item, setItem] = useState([]);
+  const [description, setDescription] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  function handleSubmit(e) {
+    e.preventDefault();
+    const newItem = { description, quantity, packed: false };
 
-function Text({ msg, step }) {
-  console.log(step);
+    setDescription("");
+    setQuantity(1);
+    console.log(item);
+  }
   return (
-    <div className="text">
-      <h3>{msg[step - 1]}</h3>
-    </div>
+    <>
+      <div className="add-form">
+        <p>What are the things you need?</p>
+        <select
+          value={quantity}
+          onChange={(e) => setQuantity(Number(e.target.value))}
+        >
+          {Array.from({ length: 20 }, (_, i) => i + 1).map((s) => (
+            <option>{s}</option>
+          ))}
+        </select>
+        <div>
+          <input
+            type="text"
+            placeholder="Item...."
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+        <div>
+          <button onClick={handleSubmit}>Add</button>
+        </div>
+      </div>
+    </>
   );
 }
-
-function Button({ step, setStep }) {
-  console.log(step);
-  function handlePrev() {
-    if (step > 1) {
-      setStep((s) => s - 1);
-    }
-  }
-  function handleNext() {
-    if (step < 3) {
-      setStep((s) => s + 1);
-    }
-  }
+function PackagesList() {
   return (
-    <div className="btns">
-      <button className="btn" onClick={handlePrev}>
-        Previous
-      </button>
-      <button className="btn" onClick={handleNext}>
-        Next
-      </button>
-    </div>
+    <ul className="list">
+      {initialItems.map((item) => (
+        <Item
+          description={item.description}
+          quantity={item.quantity}
+          packed={item.packed}
+        />
+      ))}
+    </ul>
+  );
+}
+function Item({ description, quantity, packed }) {
+  return (
+    <li className="li">
+      <span style={packed ? { textDecoration: "line-through" } : {}}>
+        {quantity}
+        {description}
+      </span>
+
+      <button>❌</button>
+    </li>
+  );
+}
+function Statistics() {
+  return (
+    <>
+      <div className="stats">
+        <p>You have X items in the cart and X(X%) already packed</p>
+      </div>
+    </>
   );
 }
