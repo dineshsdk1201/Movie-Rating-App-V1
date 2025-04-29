@@ -1,118 +1,92 @@
-import "./App.css";
 import { useState } from "react";
-const pizzaData = [
-  {
-    name: "Focaccia",
-    ingredients: "Bread with italian olive oil and rosemary",
-    price: 6,
-    photoName: "pizzas/focaccia.jpg",
-    soldOut: false,
-  },
-  {
-    name: "Pizza Margherita",
-    ingredients: "Tomato and mozarella",
-    price: 10,
-    photoName: "pizzas/margherita.jpg",
-    soldOut: false,
-  },
-  {
-    name: "Pizza Spinaci",
-    ingredients: "Tomato, mozarella, spinach, and ricotta cheese",
-    price: 12,
-    photoName: "pizzas/spinaci.jpg",
-    soldOut: false,
-  },
-  {
-    name: "Pizza Funghi",
-    ingredients: "Tomato, mozarella, mushrooms, and onion",
-    price: 12,
-    photoName: "pizzas/funghi.jpg",
-    soldOut: false,
-  },
-  {
-    name: "Pizza Salamino",
-    ingredients: "Tomato, mozarella, and pepperoni",
-    price: 15,
-    photoName: "pizzas/salamino.jpg",
-    soldOut: true,
-  },
-  {
-    name: "Pizza Prosciutto",
-    ingredients: "Tomato, mozarella, ham, aragula, and burrata cheese",
-    price: 18,
-    photoName: "pizzas/prosciutto.jpg",
-    soldOut: false,
-  },
+import "./index.css";
+const messages = [
+  "Learn React ⚛️",
+  "Apply for jobs 💼",
+  "Invest your new income 🤑",
 ];
-function App() {
-  const Alldata = pizzaData;
-  console.log(Alldata);
+export default function App() {
+  const [step, setStep] = useState(1);
+  const [isOpen, setIsOpen] = useState(true);
+  console.log(step);
+  const msg = messages;
+  return (
+    <div>
+      <Container
+        msg={msg}
+        step={step}
+        setStep={setStep}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+      />
+    </div>
+  );
+}
+
+function Container({ step, msg, setStep, isOpen, setIsOpen }) {
+  console.log(step);
+  return (
+    <div>
+      <button className="close" onClick={() => setIsOpen((s) => !s)}>
+        ❌
+      </button>
+      {isOpen && (
+        <Steps
+          step={step}
+          msg={msg}
+          setStep={setStep}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+        />
+      )}
+    </div>
+  );
+}
+
+function Steps({ step, msg, setStep, isOpen, setIsOpen }) {
+  console.log(step);
   return (
     <div className="container">
-      <Head className="header" />
-      <Menu Alldata={Alldata} />
-      <Footer />
-    </div>
-  );
-}
-
-function Head() {
-  return (
-    <div className="header">
-      <h1>Fast Pizza Co.</h1>
-    </div>
-  );
-}
-function Menu({ Alldata }) {
-  return (
-    Alldata.length > 4 && (
-      <ul className="menu pizzas">
-        {Alldata.map((pizza) => (
-          <Pizza
-            name={pizza.name}
-            ing={pizza.ingredients}
-            price={pizza.price}
-            key={pizza.id}
-            img={pizza.photoName}
-          />
-        ))}
-      </ul>
-    )
-  );
-}
-function Pizza({ name, ing, price, img }) {
-  return (
-    <li className="pizza">
-      <img src={img} alt={name} />
-      {name && (
-        <div>
-          <h3>{name}</h3>
-          <p>{ing}</p>
-          <p>
-            <span>{price}</span>
-          </p>
-        </div>
-      )}
-    </li>
-  );
-}
-
-function Footer() {
-  const time = new Date().getHours();
-  console.log(time);
-  const openHr = 12;
-  const closehr = 22;
-  const isOpen = time >= 12 && time <= 22;
-  console.log(isOpen);
-  return (
-    <div className="footer">
-      {isOpen && "We are open now"}
-      <div className="order">
-        <button className="btn" style={{ border: "3px solid yellow" }}>
-          Order
-        </button>
+      <div className="steps">
+        <h1 className={`${step >= 1 ? "active" : ""}`}>1</h1>
+        <h1 className={`${step >= 2 ? "active" : ""}`}>2</h1>
+        <h1 className={`${step >= 3 ? "active" : ""}`}>3</h1>
       </div>
+      <Text msg={msg} step={step} />
+      <Button step={step} setStep={setStep} />
     </div>
   );
 }
-export default App;
+
+function Text({ msg, step }) {
+  console.log(step);
+  return (
+    <div className="text">
+      <h3>{msg[step - 1]}</h3>
+    </div>
+  );
+}
+
+function Button({ step, setStep }) {
+  console.log(step);
+  function handlePrev() {
+    if (step > 1) {
+      setStep((s) => s - 1);
+    }
+  }
+  function handleNext() {
+    if (step < 3) {
+      setStep((s) => s + 1);
+    }
+  }
+  return (
+    <div className="btns">
+      <button className="btn" onClick={handlePrev}>
+        Previous
+      </button>
+      <button className="btn" onClick={handleNext}>
+        Next
+      </button>
+    </div>
+  );
+}
