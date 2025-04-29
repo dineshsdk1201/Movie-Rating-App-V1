@@ -29,11 +29,13 @@ function Form() {
   const [quantity, setQuantity] = useState(1);
   function handleSubmit(e) {
     e.preventDefault();
+    if (!description) return null;
+    console.log("handlesubmit called");
     const newItem = { description, quantity, packed: false };
 
     setDescription("");
     setQuantity(1);
-    console.log(item);
+    console.log(newItem);
   }
   return (
     <>
