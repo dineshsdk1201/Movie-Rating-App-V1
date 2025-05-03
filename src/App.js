@@ -27,7 +27,7 @@ function Bill({ bill, setBill }) {
       <input
         type="number"
         value={bill}
-        onChange={(e) => setBill(e.target.value)}
+        onChange={(e) => setBill(Number(e.target.value))}
       />
     </div>
   );
@@ -36,10 +36,10 @@ function MyTip({ myTip, setMytip }) {
   return (
     <div>
       <h3 style={{ display: "inline" }}>How You are satisfied</h3>
-      <select value={myTip} onChange={(e) => setMytip(e.target.value)}>
-        <option value={10}>10%</option>
-        <option value={20}>20%</option>
-        <option value={30}>30%</option>
+      <select value={myTip} onChange={(e) => setMytip(Number(e.target.value))}>
+        <option value="10">10%</option>
+        <option value="20">20%</option>
+        <option value="30">30%</option>
       </select>
     </div>
   );
@@ -49,10 +49,10 @@ function FriendTip({ ftip, setFtip }) {
   return (
     <div>
       <h3 style={{ display: "inline" }}>How Your Friend satisfied</h3>
-      <select value={ftip} onChange={(e) => setFtip(e.target.value)}>
-        <option value={10}>10%</option>
-        <option value={20}>20%</option>
-        <option value={30}>30%</option>
+      <select value={ftip} onChange={(e) => setFtip(Number(e.target.value))}>
+        <option value="10">10%</option>
+        <option value="20">20%</option>
+        <option value="30">30%</option>
       </select>
     </div>
   );
@@ -60,12 +60,12 @@ function FriendTip({ ftip, setFtip }) {
 
 function TotalBill({ ftip, myTip, bill }) {
   // console.log(myTip, ftip);
-  console.log(typeof myTip, typeof ftip, typeof bill);
+  // console.log(typeof myTip, typeof ftip, typeof bill);
   const totalTipPercentage = (ftip + myTip) / 2;
   // console.log(totalTipPercentage);
-  const totalTip = (totalTipPercentage / 100) * Number(bill);
+  const totalTip = (totalTipPercentage / 100) * bill;
   // console.log(totalTip);
-  const totalBill = totalTip + Number(bill);
+  const totalBill = totalTip + bill;
 
   return (
     <>
