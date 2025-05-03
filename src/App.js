@@ -1,60 +1,66 @@
-import "./index.css";
 import { useState } from "react";
-const faqs = [
-  {
-    id: 1,
-    title: "Where are these chairs assembled?",
-    text: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Accusantium, quaerat temporibus quas dolore provident nisi ut aliquid ratione beatae sequi aspernatur veniam repellendus.",
-  },
-  {
-    id: 2,
-    title: "How long do I have to return my chair?",
-    text: "Pariatur recusandae dignissimos fuga voluptas unde optio nesciunt commodi beatae, explicabo natus.",
-  },
-  {
-    id: 3,
-    title: "Do you ship to countries outside the EU?",
-    text: "Excepturi velit laborum, perspiciatis nemo perferendis reiciendis aliquam possimus dolor sed! Dolore laborum ducimus veritatis facere molestias!",
-  },
-];
+import "./index.css";
+
 export default function App() {
+  const [myTip, setMyTip] = useState(0);
+  const [friendTip, setFriendTip] = useState(0);
+  const [bill, setBill] = useState(0);
+
   return (
     <>
-      <Accordian />
+      <Bill bill={bill} setBill={setBill} />
+      <MyTip myTip={myTip} setMyTip={setMyTip} />
+      <FriendTip friendTip={friendTip} setFriendTip={setFriendTip} />
+      <TotalBill bill={bill} myTip={myTip} friendTip={friendTip} />
     </>
   );
 }
 
-function Accordian({ faq }) {
+function Bill({ bill, setBill }) {
   return (
-    <div className="accordion">
-      {faqs.map((item, num) => (
-        <AccordianItem
-          title={item.title}
-          text={item.text}
-          num={num}
-          key={num}
-        />
-      ))}
+    <div>
+      <p style={{ display: "inline" }}>How Much The Bill</p>
+      <input
+        type="number"
+        value={bill}
+        onChange={(e) => setBill(e.target.value)}
+      />
+    </div>
+  );
+}
+function MyTip({ myTip, setMyTip }) {
+  return (
+    <div>
+      <p style={{ display: "inline" }}>How You Likely to give he tip</p>
+      <select value={myTip} onCanPlay={(e) => setMyTip(e.target.value)}>
+        <option value={10}>10%</option>
+        <option value={20}>20%</option>
+        <option value={30}>30%</option>
+      </select>
     </div>
   );
 }
 
-function AccordianItem({ text, title, num }) {
-  const [open, setOpen] = useState(false);
-  function handleClick() {
-    setOpen((cur) => !cur);
-  }
+function FriendTip({ friendTip, setFriendTip }) {
+  return (
+    <div>
+      <p style={{ display: "inline" }}>How Your friend Like to share tip</p>
+      <select value={friendTip} onCanPlay={(e) => setFriendTip(e.target.value)}>
+        <option value={10}>10%</option>
+        <option value={20}>20%</option>
+        <option value={30}>30%</option>
+      </select>
+    </div>
+  );
+}
+
+function TotalBill({ friendTip, myTip, bill }) {
+  const totalTip = ((myTip + friendTip) / bill) * 100;
+  console.log(totalTip);
   return (
     <>
-      <div className={`item ${open ? "open" : ""}`} onClick={handleClick}>
-        <h2 className="number">{num < 9 ? `0${num + 1}` : num + 1}</h2>
-        <div className="content-box">
-          <h3 className="title">{title}</h3>
-          {open && <p>{text}</p>}
-        </div>
-        <button className="icon">{open ? "-" : "+"}</button>
-      </div>
+      <p>The actual Bill is {bill} </p>
+      <p>The total Bill is {totalTip + bill} </p>
     </>
   );
 }
