@@ -1,220 +1,231 @@
 import { useState } from "react";
 
-const initialFriends = [
+const tempMovieData = [
   {
-    id: 118836,
-    name: "Clark",
-    image: "https://i.pravatar.cc/48?u=118836",
-    balance: -7,
+    imdbID: "tt1375666",
+    Title: "Inception",
+    Year: "2010",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
   },
   {
-    id: 933372,
-    name: "Sarah",
-    image: "https://i.pravatar.cc/48?u=933372",
-    balance: 20,
+    imdbID: "tt0133093",
+    Title: "The Matrix",
+    Year: "1999",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg",
   },
   {
-    id: 499476,
-    name: "Anthony",
-    image: "https://i.pravatar.cc/48?u=499476",
-    balance: 0,
+    imdbID: "tt6751668",
+    Title: "Parasite",
+    Year: "2019",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
   },
 ];
 
-function Button({ children, onClick }) {
+const tempWatchedData = [
+  {
+    imdbID: "tt1375666",
+    Title: "Inception",
+    Year: "2010",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+    runtime: 148,
+    imdbRating: 8.8,
+    userRating: 10,
+  },
+  {
+    imdbID: "tt0088763",
+    Title: "Back to the Future",
+    Year: "1985",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
+    runtime: 116,
+    imdbRating: 8.5,
+    userRating: 9,
+  },
+];
+
+const average = (arr) =>
+  arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
+
+export default function App() {
+  const [movies, setMovies] = useState(tempMovieData);
+
   return (
-    <button className="button" onClick={onClick}>
-      {children}
-    </button>
+    <>
+      <Navbar>
+        <NumResults movies={movies} />
+      </Navbar>
+
+      <Main>
+        <MoviesList movies={movies} />
+      </Main>
+    </>
   );
 }
 
-export default function App() {
-  const [isAdd, setIsAdd] = useState(false);
-  const [selectedFriend, setSelectedFriend] = useState(null);
-  const [friends, setFriends] = useState(initialFriends);
-
-  function handleAdd() {
-    setIsAdd(!isAdd);
-  }
-
-  function handleAddFriend(newFriend) {
-    setFriends((friends) => [...friends, newFriend]);
-    setIsAdd(false);
-  }
-
-  function handleSelect(id, friend) {
-    setSelectedFriend((s) => (s?.id === id ? null : friend));
-    setIsAdd(false);
-  }
-  function handleSplitBill(value) {
-    console.log(value);
-
-    setFriends((friends) =>
-      friends.map((friend) =>
-        friend.id === selectedFriend.id
-          ? {
-              ...friend,
-              balance: friend.balance + value,
-            }
-          : friend
-      )
-    );
-    setSelectedFriend(null);
-  }
+function Navbar({ children }) {
   return (
-    <div className="app">
-      <div className="sidebar">
-        <FriendsList
-          handleSelect={handleSelect}
-          friends={friends}
-          selectedFriend={selectedFriend}
-        />
+    <nav className="nav-bar">
+      <Logo />
+      <Search />
+      {children}
+    </nav>
+  );
+}
 
-        {isAdd && <FormAddFriend handleAddFriend={handleAddFriend} />}
+function Logo() {
+  return (
+    <div className="logo">
+      <span role="img">🍿</span>
+      <h1>usePopcorn</h1>
+    </div>
+  );
+}
+function Search() {
+  const [query, setQuery] = useState("");
 
-        <Button onClick={handleAdd}>{isAdd ? "Close" : "Add Friend"}</Button>
-      </div>
+  return (
+    <input
+      className="search"
+      type="text"
+      placeholder="Search movies..."
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+    />
+  );
+}
+function NumResults({ movies }) {
+  return (
+    <p className="num-results">
+      Found <strong>{movies.length}</strong> results
+    </p>
+  );
+}
 
-      {selectedFriend && (
-        <FormSplitBill
-          selectedFriend={selectedFriend}
-          setSelectedFriend={setSelectedFriend}
-          friends={friends}
-          setFriends={setFriends}
-          onSplitBill={handleSplitBill}
-        />
-      )}
+function Main({ children }) {
+  const [watched, setWatched] = useState(tempWatchedData);
+
+  return (
+    <main className="main">
+      {children}
+      <WatchedList>
+        <WatchedSummary watched={watched} />
+
+        <WatchedMovieList watched={watched} />
+      </WatchedList>
+    </main>
+  );
+}
+function MoviesList({ movies }) {
+  const [isOpen1, setIsOpen1] = useState(true);
+  return (
+    <div className="box">
+      <button
+        className="btn-toggle"
+        onClick={() => setIsOpen1((open) => !open)}
+      >
+        {isOpen1 ? "–" : "+"}
+      </button>
+      <ul className="list">
+        {isOpen1 &&
+          movies?.map((movie) => <Movie movie={movie} key={movie.imdbID} />)}
+      </ul>
     </div>
   );
 }
 
-function FriendsList({ handleSelect, friends, selectedFriend }) {
+function Movie({ movie }) {
+  console.log(movie);
   return (
-    <ul>
-      {friends.map((friend) => (
-        <Friend
-          friend={friend}
-          key={friend.id}
-          handleSelect={handleSelect}
-          selectedFriend={selectedFriend}
-        />
+    <li key={movie.imdbID}>
+      <img src={movie.Poster} alt={`${movie.Title} poster`} />
+      <h3>{movie.Title}</h3>
+      <div>
+        <p>
+          <span>🗓</span>
+          <span>{movie.Year}</span>
+        </p>
+      </div>
+    </li>
+  );
+}
+
+function WatchedList({ children }) {
+  const [isOpen2, setIsOpen2] = useState(true);
+
+  return (
+    <div className="box">
+      <button
+        className="btn-toggle"
+        onClick={() => setIsOpen2((open) => !open)}
+      >
+        {isOpen2 ? "–" : "+"}
+      </button>
+      {isOpen2 && <>{children}</>}
+    </div>
+  );
+}
+function WatchedSummary({ watched }) {
+  const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
+  const avgUserRating = average(watched.map((movie) => movie.userRating));
+  const avgRuntime = average(watched.map((movie) => movie.runtime));
+  return (
+    <div className="summary">
+      <h2>Movies you watched</h2>
+      <div>
+        <p>
+          <span>#️⃣</span>
+          <span>{watched.length} movies</span>
+        </p>
+        <p>
+          <span>⭐️</span>
+          <span>{avgImdbRating}</span>
+        </p>
+        <p>
+          <span>🌟</span>
+          <span>{avgUserRating}</span>
+        </p>
+        <p>
+          <span>⏳</span>
+          <span>{avgRuntime} min</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function WatchedMovieList({ watched }) {
+  return (
+    <ul className="list">
+      {watched.map((movie) => (
+        <WatchedMovie movie={movie} key={movie.imdbID} />
       ))}
     </ul>
   );
 }
 
-function Friend({ friend, handleSelect, selectedFriend }) {
-  const isSelected = selectedFriend?.id === friend.id;
-
+function WatchedMovie({ movie }) {
   return (
-    <li className={isSelected ? "selected" : ""}>
-      <img src={friend.image} alt={friend.name} />
-      <h3>{friend.name}</h3>
-      {friend.balance < 0 && (
-        <p className="red">
-          You owe {friend.name} {Math.abs(friend.balance)}€
+    <li key={movie.imdbID}>
+      <img src={movie.Poster} alt={`${movie.Title} poster`} />
+      <h3>{movie.Title}</h3>
+      <div>
+        <p>
+          <span>⭐️</span>
+          <span>{movie.imdbRating}</span>
         </p>
-      )}
-      {friend.balance > 0 && (
-        <p className="green">
-          {friend.name} owes you {Math.abs(friend.balance)}€
+        <p>
+          <span>🌟</span>
+          <span>{movie.userRating}</span>
         </p>
-      )}
-      {friend.balance === 0 && <p>You and {friend.name} are even</p>}
-      <Button onClick={() => handleSelect(friend.id, friend)}>
-        {isSelected ? "Close" : "Select"}
-      </Button>
+        <p>
+          <span>⏳</span>
+          <span>{movie.runtime} min</span>
+        </p>
+      </div>
     </li>
-  );
-}
-
-function FormAddFriend({ handleAddFriend }) {
-  const [name, setName] = useState("");
-  const [imageUrl, setImageUrl] = useState("https://i.pravatar.cc/48");
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (!name || !imageUrl) return;
-    const id = crypto.randomUUID();
-    const image = `${imageUrl}?id=${id}`;
-    const newFriend = {
-      id,
-      name,
-      image,
-      balance: 0,
-    };
-    setName("");
-    setImageUrl("https://i.pravatar.cc/48");
-    handleAddFriend(newFriend);
-  }
-
-  return (
-    <form className="form-add-friend" onSubmit={handleSubmit}>
-      <label>👫 Friend name</label>
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-
-      <label>🌄 Image URL</label>
-      <input
-        type="text"
-        value={imageUrl}
-        onChange={(e) => setImageUrl(e.target.value)}
-      />
-
-      <Button>Add</Button>
-    </form>
-  );
-}
-
-function FormSplitBill({
-  selectedFriend,
-  setSelectedFriend,
-  friends,
-  setFriends,
-  onSplitBill,
-}) {
-  const [bill, setBill] = useState("");
-  const [myBill, setMyBill] = useState("");
-  const paidByFriend = bill && myBill ? bill - myBill : 0;
-  const [paysBy, setPaysBy] = useState("user");
-
-  function handleSplitBill(e) {
-    e.preventDefault();
-    onSplitBill(paysBy === "user" ? paidByFriend : -myBill);
-  }
-
-  return (
-    <form className="form-split-bill" onSubmit={handleSplitBill}>
-      <h2>Split a bill with {selectedFriend.name}</h2>
-
-      <label>💰 Bill value</label>
-      <input
-        type="text"
-        value={bill}
-        onChange={(e) => setBill(Number(e.target.value))}
-      />
-
-      <label>🧍‍♀️ Your expense</label>
-      <input
-        type="text"
-        value={myBill}
-        onChange={(e) => setMyBill(Number(e.target.value))}
-      />
-
-      <label>👫 {selectedFriend.name}'s expense</label>
-      <input type="text" disabled value={paidByFriend} />
-
-      <label>🤑 Who is paying the bill</label>
-      <select value={paysBy} onChange={(e) => setPaysBy(e.target.value)}>
-        <option value="user">You</option>
-        <option value="friend">{selectedFriend.name}</option>
-      </select>
-
-      <Button>Split bill</Button>
-    </form>
   );
 }
