@@ -52,16 +52,22 @@ const average = (arr) =>
 
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
-
+  const [selectedMovie, setSelectedMovie] = useState(null);
+  function handleSelect(selected) {
+    console.log(selected);
+    setSelectedMovie(selected);
+  }
   return (
     <>
       <Navbar>
         <NumResults movies={movies} />
       </Navbar>
 
-      <Main>
-        <MoviesList movies={movies} />
-      </Main>
+      <Main
+        selectedMovie={selectedMovie}
+        movies={movies}
+        handleSelect={handleSelect}
+      />
     </>
   );
 }
@@ -105,21 +111,17 @@ function NumResults({ movies }) {
   );
 }
 
-function Main({ children }) {
+function Main({ selectedMovie, movies, handleSelect }) {
   const [watched, setWatched] = useState(tempWatchedData);
 
   return (
     <main className="main">
-      {children}
-      <WatchedList>
-        <WatchedSummary watched={watched} />
-
-        <WatchedMovieList watched={watched} />
-      </WatchedList>
+      <MoviesList movies={movies} handleSelect={handleSelect} />
+      <WatchedList selectedMovie={selectedMovie} watched={watched} />
     </main>
   );
 }
-function MoviesList({ movies }) {
+function MoviesList({ movies, handleSelect }) {
   const [isOpen1, setIsOpen1] = useState(true);
   return (
     <div className="box">
@@ -131,16 +133,22 @@ function MoviesList({ movies }) {
       </button>
       <ul className="list">
         {isOpen1 &&
-          movies?.map((movie) => <Movie movie={movie} key={movie.imdbID} />)}
+          movies?.map((movie) => (
+            <Movie
+              movie={movie}
+              key={movie.imdbID}
+              handleSelect={() => handleSelect(movie)}
+            />
+          ))}
       </ul>
     </div>
   );
 }
 
-function Movie({ movie }) {
+function Movie({ movie, handleSelect }) {
   console.log(movie);
   return (
-    <li key={movie.imdbID}>
+    <li key={movie.imdbID} onClick={() => handleSelect(movie.imdbID)}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
@@ -153,7 +161,7 @@ function Movie({ movie }) {
   );
 }
 
-function WatchedList({ children }) {
+function WatchedList({ selectedMovie, watched }) {
   const [isOpen2, setIsOpen2] = useState(true);
 
   return (
@@ -164,8 +172,22 @@ function WatchedList({ children }) {
       >
         {isOpen2 ? "–" : "+"}
       </button>
-      {isOpen2 && <>{children}</>}
+
+      {isOpen2 && <WatchedSummary watched={watched} />}
+
+      {selectedMovie
+        ? isOpen2 && <SelectedMovie selectedMovie={selectedMovie} />
+        : isOpen2 && <WatchedMovieList watched={watched} />}
     </div>
+  );
+}
+function WatchedMovieList({ watched }) {
+  return (
+    <ul className="list">
+      {watched.map((movie) => (
+        <WatchedMovie movie={movie} key={movie.imdbID} />
+      ))}
+    </ul>
   );
 }
 function WatchedSummary({ watched }) {
@@ -197,16 +219,6 @@ function WatchedSummary({ watched }) {
   );
 }
 
-function WatchedMovieList({ watched }) {
-  return (
-    <ul className="list">
-      {watched.map((movie) => (
-        <WatchedMovie movie={movie} key={movie.imdbID} />
-      ))}
-    </ul>
-  );
-}
-
 function WatchedMovie({ movie }) {
   return (
     <li key={movie.imdbID}>
@@ -227,5 +239,15 @@ function WatchedMovie({ movie }) {
         </p>
       </div>
     </li>
+  );
+}
+
+function SelectedMovie({ selectedMovie }) {
+  return (
+    <div className="details">
+      <img src={selectedMovie.Poster} alt={selectedMovie.imdbID} />
+      <h4>{selectedMovie.Title}</h4>
+      <p>{selectedMovie.Year}</p>
+    </div>
   );
 }
