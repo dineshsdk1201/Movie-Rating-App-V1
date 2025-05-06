@@ -116,30 +116,52 @@ function Main({ selectedMovie, movies, handleSelect }) {
 
   return (
     <main className="main">
-      <MoviesList movies={movies} handleSelect={handleSelect} />
-      <WatchedList selectedMovie={selectedMovie} watched={watched} />
+      {/* Passing props as an element explicitly */}
+      {/* <Box
+        element={<MoviesList movies={movies} handleSelect={handleSelect} />}
+      />
+      <Box
+        element={
+          <>
+            <WatchedList selectedMovie={selectedMovie} watched={watched} />
+          </>
+        }
+      /> */}
+
+      {/* Reusable component via children prop */}
+      <Box>
+        <MoviesList movies={movies} handleSelect={handleSelect} />
+      </Box>
+      <Box>
+        <WatchedList selectedMovie={selectedMovie} watched={watched} />
+      </Box>
     </main>
   );
 }
-function MoviesList({ movies, handleSelect }) {
-  const [isOpen1, setIsOpen1] = useState(true);
+function Box({ children }) {
+  const [isOpen, setIsOpen] = useState(true);
   return (
     <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen1((open) => !open)}
-      >
-        {isOpen1 ? "–" : "+"}
+      <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
+        {isOpen ? "–" : "+"}
       </button>
+
+      {isOpen && children}
+    </div>
+  );
+}
+function MoviesList({ movies, handleSelect }) {
+  // const [isOpen1, setIsOpen1] = useState(true);
+  return (
+    <div>
       <ul className="list">
-        {isOpen1 &&
-          movies?.map((movie) => (
-            <Movie
-              movie={movie}
-              key={movie.imdbID}
-              handleSelect={() => handleSelect(movie)}
-            />
-          ))}
+        {movies?.map((movie) => (
+          <Movie
+            movie={movie}
+            key={movie.imdbID}
+            handleSelect={() => handleSelect(movie)}
+          />
+        ))}
       </ul>
     </div>
   );
@@ -162,22 +184,24 @@ function Movie({ movie, handleSelect }) {
 }
 
 function WatchedList({ selectedMovie, watched }) {
-  const [isOpen2, setIsOpen2] = useState(true);
+  // const [isOpen2, setIsOpen2] = useState(true);
 
   return (
-    <div className="box">
-      <button
+    <div>
+      {/* <button
         className="btn-toggle"
         onClick={() => setIsOpen2((open) => !open)}
       >
         {isOpen2 ? "–" : "+"}
-      </button>
-
-      {isOpen2 && <WatchedSummary watched={watched} />}
-
-      {selectedMovie
-        ? isOpen2 && <SelectedMovie selectedMovie={selectedMovie} />
-        : isOpen2 && <WatchedMovieList watched={watched} />}
+      </button> */}
+      <WatchedSummary watched={watched} />
+      {selectedMovie ? (
+        <SelectedMovie selectedMovie={selectedMovie} />
+      ) : (
+        <>
+          <WatchedMovieList watched={watched} />
+        </>
+      )}
     </div>
   );
 }
