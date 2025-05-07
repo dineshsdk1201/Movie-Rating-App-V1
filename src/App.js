@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import StarRating from "./StarRating";
 const tempMovieData = [
   {
     imdbID: "tt1375666",
@@ -267,11 +267,13 @@ function WatchedMovie({ movie }) {
 }
 
 function SelectedMovie({ selectedMovie }) {
+  const messages = ["Terrible", "Bad", "Okay", "Good", "Excellent"];
   return (
     <div className="details">
       <img src={selectedMovie.Poster} alt={selectedMovie.imdbID} />
       <h4>{selectedMovie.Title}</h4>
       <p>{selectedMovie.Year}</p>
+      <StarRating maxRating={5} messages={messages} defaultRating={2} />
     </div>
   );
 }
