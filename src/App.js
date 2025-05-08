@@ -1,279 +1,110 @@
 import { useState } from "react";
-import StarRating from "./StarRating";
-const tempMovieData = [
+
+const content = [
   {
-    imdbID: "tt1375666",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+    summary: "React is a library for building UIs",
+    details:
+      "Dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
   },
   {
-    imdbID: "tt0133093",
-    Title: "The Matrix",
-    Year: "1999",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg",
+    summary: "State management is like giving state a home",
+    details:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
   },
   {
-    imdbID: "tt6751668",
-    Title: "Parasite",
-    Year: "2019",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
+    summary: "We can think of props as the component API",
+    details:
+      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
   },
 ];
-
-const tempWatchedData = [
-  {
-    imdbID: "tt1375666",
-    Title: "Inception",
-    Year: "2010",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-    runtime: 148,
-    imdbRating: 8.8,
-    userRating: 10,
-  },
-  {
-    imdbID: "tt0088763",
-    Title: "Back to the Future",
-    Year: "1985",
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
-    runtime: 116,
-    imdbRating: 8.5,
-    userRating: 9,
-  },
-];
-
-const average = (arr) =>
-  arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
-
+const Key = "674126bf";
 export default function App() {
-  const [movies, setMovies] = useState(tempMovieData);
-  const [selectedMovie, setSelectedMovie] = useState(null);
-  function handleSelect(selected) {
-    console.log(selected);
-    setSelectedMovie(selected);
-  }
   return (
-    <>
-      <Navbar>
-        <NumResults movies={movies} />
-      </Navbar>
-
-      <Main
-        selectedMovie={selectedMovie}
-        movies={movies}
-        handleSelect={handleSelect}
-      />
-    </>
-  );
-}
-
-function Navbar({ children }) {
-  return (
-    <nav className="nav-bar">
-      <Logo />
-      <Search />
-      {children}
-    </nav>
-  );
-}
-
-function Logo() {
-  return (
-    <div className="logo">
-      <span role="img">🍿</span>
-      <h1>usePopcorn</h1>
+    <div className="tabbed">
+      <Tabbed content={content} />
     </div>
   );
 }
-function Search() {
-  const [query, setQuery] = useState("");
 
-  return (
-    <input
-      className="search"
-      type="text"
-      placeholder="Search movies..."
-      value={query}
-      onChange={(e) => setQuery(e.target.value)}
-    />
-  );
-}
-function NumResults({ movies }) {
-  return (
-    <p className="num-results">
-      Found <strong>{movies.length}</strong> results
-    </p>
-  );
-}
-
-function Main({ selectedMovie, movies, handleSelect }) {
-  const [watched, setWatched] = useState(tempWatchedData);
-
-  return (
-    <main className="main">
-      {/* Passing props as an element explicitly */}
-      {/* <Box
-        element={<MoviesList movies={movies} handleSelect={handleSelect} />}
-      />
-      <Box
-        element={
-          <>
-            <WatchedList selectedMovie={selectedMovie} watched={watched} />
-          </>
-        }
-      /> */}
-
-      {/* Reusable component via children prop */}
-      <Box>
-        <MoviesList movies={movies} handleSelect={handleSelect} />
-      </Box>
-      <Box>
-        <WatchedList selectedMovie={selectedMovie} watched={watched} />
-      </Box>
-    </main>
-  );
-}
-function Box({ children }) {
-  const [isOpen, setIsOpen] = useState(true);
-  return (
-    <div className="box">
-      <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
-        {isOpen ? "–" : "+"}
-      </button>
-
-      {isOpen && children}
-    </div>
-  );
-}
-function MoviesList({ movies, handleSelect }) {
-  // const [isOpen1, setIsOpen1] = useState(true);
+function Tabbed({ content }) {
+  const [activeTab, setActiveTab] = useState(0);
+  console.log(activeTab);
   return (
     <div>
-      <ul className="list">
-        {movies?.map((movie) => (
-          <Movie
-            movie={movie}
-            key={movie.imdbID}
-            handleSelect={() => handleSelect(movie)}
-          />
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function Movie({ movie, handleSelect }) {
-  console.log(movie);
-  return (
-    <li key={movie.imdbID} onClick={() => handleSelect(movie.imdbID)}>
-      <img src={movie.Poster} alt={`${movie.Title} poster`} />
-      <h3>{movie.Title}</h3>
-      <div>
-        <p>
-          <span>🗓</span>
-          <span>{movie.Year}</span>
-        </p>
+      <div className="tabs">
+        <Tab num={0} activeTab={activeTab} onClick={setActiveTab} />
+        <Tab num={1} activeTab={activeTab} onClick={setActiveTab} />
+        <Tab num={2} activeTab={activeTab} onClick={setActiveTab} />
+        <Tab num={3} activeTab={activeTab} onClick={setActiveTab} />
       </div>
-    </li>
-  );
-}
-
-function WatchedList({ selectedMovie, watched }) {
-  // const [isOpen2, setIsOpen2] = useState(true);
-
-  return (
-    <div>
-      {/* <button
-        className="btn-toggle"
-        onClick={() => setIsOpen2((open) => !open)}
-      >
-        {isOpen2 ? "–" : "+"}
-      </button> */}
-      <WatchedSummary watched={watched} />
-      {selectedMovie ? (
-        <SelectedMovie selectedMovie={selectedMovie} />
+      {activeTab <= 2 ? (
+        <TabbedContent
+          item={content.at(activeTab)}
+          key={content.at(activeTab).summary}
+        />
       ) : (
-        <>
-          <WatchedMovieList watched={watched} />
-        </>
+        <DifferentComponent />
       )}
     </div>
   );
 }
-function WatchedMovieList({ watched }) {
+function Tab({ num, onClick, activeTab }) {
   return (
-    <ul className="list">
-      {watched.map((movie) => (
-        <WatchedMovie movie={movie} key={movie.imdbID} />
-      ))}
-    </ul>
+    <div>
+      <button
+        className={activeTab === num ? "tab active" : "tab"}
+        onClick={() => onClick(num)}
+      >{`Tab ${num + 1}`}</button>
+    </div>
   );
 }
-function WatchedSummary({ watched }) {
-  const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
-  const avgUserRating = average(watched.map((movie) => movie.userRating));
-  const avgRuntime = average(watched.map((movie) => movie.runtime));
+function TabbedContent({ item }) {
+  console.log("Render");
+  const [showDetails, setShowDetails] = useState(true);
+  const [likes, setLikes] = useState(0);
+  function handleInc() {
+    setLikes((likes) => likes + 1);
+  }
+  function handleTripleInc() {
+    setLikes((likes) => likes + 1);
+    setLikes((likes) => likes + 1);
+    setLikes((likes) => likes + 1);
+  }
+  function handleUndo() {
+    setShowDetails(true);
+    setLikes(0);
+  }
   return (
-    <div className="summary">
-      <h2>Movies you watched</h2>
-      <div>
-        <p>
-          <span>#️⃣</span>
-          <span>{watched.length} movies</span>
-        </p>
-        <p>
-          <span>⭐️</span>
-          <span>{avgImdbRating}</span>
-        </p>
-        <p>
-          <span>🌟</span>
-          <span>{avgUserRating}</span>
-        </p>
-        <p>
-          <span>⏳</span>
-          <span>{avgRuntime} min</span>
-        </p>
+    <div className="all">
+      {showDetails && (
+        <div className="content">
+          <h4>{item.summary}</h4>
+          <p>{item.details}</p>
+        </div>
+      )}
+      <div className="all-actions">
+        <div className="tab-actions">
+          <button onClick={() => setShowDetails((s) => !s)}>
+            {showDetails ? "Hide Details" : "Show Details"}
+          </button>
+          <button onClick={handleUndo}>undo</button>
+        </div>
+        {showDetails && (
+          <div className="likes">
+            <span style={{ fontSize: "20px" }}>💗{likes}</span>
+            <button onClick={handleInc}>+</button>
+            <button onClick={handleTripleInc}>+++</button>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-function WatchedMovie({ movie }) {
+function DifferentComponent() {
   return (
-    <li key={movie.imdbID}>
-      <img src={movie.Poster} alt={`${movie.Title} poster`} />
-      <h3>{movie.Title}</h3>
-      <div>
-        <p>
-          <span>⭐️</span>
-          <span>{movie.imdbRating}</span>
-        </p>
-        <p>
-          <span>🌟</span>
-          <span>{movie.userRating}</span>
-        </p>
-        <p>
-          <span>⏳</span>
-          <span>{movie.runtime} min</span>
-        </p>
-      </div>
-    </li>
-  );
-}
-
-function SelectedMovie({ selectedMovie }) {
-  const messages = ["Terrible", "Bad", "Okay", "Good", "Excellent"];
-  return (
-    <div className="details">
-      <img src={selectedMovie.Poster} alt={selectedMovie.imdbID} />
-      <h4>{selectedMovie.Title}</h4>
-      <p>{selectedMovie.Year}</p>
-      <StarRating maxRating={5} messages={messages} defaultRating={2} />
-    </div>
+    <>
+      <h4>I am a different component</h4>
+    </>
   );
 }
