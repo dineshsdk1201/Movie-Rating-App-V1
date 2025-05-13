@@ -47,12 +47,14 @@ body {
   display: flex;
   gap: 2.4rem;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .box {
   width: 42rem;
   max-width: 42rem;
   background-color: var(--color-background-500);
+  flex-grow: 1;
   border-radius: 0.9rem;
   /* overflow: scroll; */
   position: relative;
@@ -139,6 +141,7 @@ body {
   list-style: none;
   padding: 0.8rem 0;
   cursor: pointer;
+
   /* overflow: scroll; */
 }
 

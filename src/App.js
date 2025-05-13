@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import StarRating from "./StarRating";
 const tempMovieData = [
   {
@@ -47,19 +47,98 @@ const tempWatchedData = [
   },
 ];
 
+const key = "674126bf";
+
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export default function App() {
-  const [movies, setMovies] = useState(tempMovieData);
+  const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [query, setQuery] = useState("");
+  // const query = "Interstellar";
   function handleSelect(selected) {
-    console.log(selected);
+    // console.log(selected);
     setSelectedMovie(selected);
   }
+  // useEffect(function () {
+  //   async function fetchMovies() {
+  //     try {
+  //       setIsLoading(true);
+  //       const res = await fetch(
+  //         `http://www.omdbapi.com/?i=tt3896198&apikey=${key}&s=${query}`
+  //       );
+  //       const data = await res.json();
+  //       console.log(data);
+  //       setMovies(data.Search);
+  //       // console.log(movies);
+  //       setIsLoading(false);
+
+  //       if (data.Response === "False") {
+  //         console.log("FFFFFFFFFFFFFFF");
+  //         throw new Error("EEEEEEEEEEEEEEEEEEE");
+  //       }
+  //     } catch (e) {
+  //       console.log(e);
+  //       // console.log(e.message);
+  //       // setError(e.message);
+  //       // setError(e);
+  //     }
+  //   }
+  //   fetchMovies();
+  // }, []);
+
+  useEffect(
+    function () {
+      async function fetchMovies() {
+        try {
+          setIsLoading(true);
+          setError("");
+
+          const res = await fetch(
+            `http://www.omdbapi.com/?apikey=${key}&s=${query}`
+          );
+
+          if (!res.ok)
+            throw new Error("Something went wrong with fetching movies");
+
+          const data = await res.json();
+          if (data.Response === "False") throw new Error("Movie not found");
+
+          setMovies(data.Search);
+          setError("");
+        } catch (err) {
+          if (err instanceof Error) {
+            console.error("Error fetching movies:", err.message); // Log the error message
+            setError(err.message); // Set the error message in the state
+          } else {
+            console.error("Unexpected error:", err); // Log unexpected errors
+            setError("An unexpected error occurred");
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      }
+      // if (!query.length) {
+      //   setError("");
+      //   setMovies([]);
+      //   return;
+      // }
+      if (query.length < 3) {
+        setError("");
+        setMovies([]);
+        return;
+      }
+      fetchMovies();
+    },
+    [query]
+  ); // Add key and query to the dependency array if they can change
+
   return (
     <>
-      <Navbar>
+      <Navbar query={query} setQuery={setQuery}>
         <NumResults movies={movies} />
       </Navbar>
 
@@ -67,16 +146,18 @@ export default function App() {
         selectedMovie={selectedMovie}
         movies={movies}
         handleSelect={handleSelect}
+        isLoading={isLoading}
+        error={error}
       />
     </>
   );
 }
 
-function Navbar({ children }) {
+function Navbar({ children, query, setQuery }) {
   return (
     <nav className="nav-bar">
       <Logo />
-      <Search />
+      <Search query={query} setQuery={setQuery} />
       {children}
     </nav>
   );
@@ -90,8 +171,8 @@ function Logo() {
     </div>
   );
 }
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({ query, setQuery }) {
+  // const [query, setQuery] = useState("");
 
   return (
     <input
@@ -106,14 +187,14 @@ function Search() {
 function NumResults({ movies }) {
   return (
     <p className="num-results">
-      Found <strong>{movies.length}</strong> results
+      Found <strong>{movies?.length ?? 0}</strong> results
     </p>
   );
 }
 
-function Main({ selectedMovie, movies, handleSelect }) {
+function Main({ selectedMovie, movies, handleSelect, isLoading, error }) {
   const [watched, setWatched] = useState(tempWatchedData);
-
+  // console.log(error);
   return (
     <main className="main">
       {/* Passing props as an element explicitly */}
@@ -130,12 +211,31 @@ function Main({ selectedMovie, movies, handleSelect }) {
 
       {/* Reusable component via children prop */}
       <Box>
-        <MoviesList movies={movies} handleSelect={handleSelect} />
+        {/* {isLoading ? (
+          <Loader />
+        ) : (
+          <MoviesList movies={movies} handleSelect={handleSelect} />
+        )} */}
+
+        {isLoading && <Loader />}
+        {!isLoading && !error && (
+          <MoviesList movies={movies} handleSelect={handleSelect} />
+        )}
+        {/* {error && <Error />} */}
+        <Error message={error} />
       </Box>
       <Box>
         <WatchedList selectedMovie={selectedMovie} watched={watched} />
       </Box>
     </main>
+  );
+}
+function Error({ message }) {
+  // console.log(message);
+  return (
+    <div>
+      <p>{message}</p>
+    </div>
   );
 }
 function Box({ children }) {
@@ -146,7 +246,7 @@ function Box({ children }) {
         {isOpen ? "–" : "+"}
       </button>
 
-      {isOpen && children}
+      <div>{isOpen && children}</div>
     </div>
   );
 }
@@ -168,7 +268,7 @@ function MoviesList({ movies, handleSelect }) {
 }
 
 function Movie({ movie, handleSelect }) {
-  console.log(movie);
+  // console.log(movie);
   return (
     <li key={movie.imdbID} onClick={() => handleSelect(movie.imdbID)}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
@@ -185,7 +285,7 @@ function Movie({ movie, handleSelect }) {
 
 function WatchedList({ selectedMovie, watched }) {
   // const [isOpen2, setIsOpen2] = useState(true);
-
+  console.log(selectedMovie);
   return (
     <div>
       {/* <button
@@ -194,7 +294,7 @@ function WatchedList({ selectedMovie, watched }) {
       >
         {isOpen2 ? "–" : "+"}
       </button> */}
-      <WatchedSummary watched={watched} />
+      {selectedMovie ? "" : <WatchedSummary watched={watched} />}
       {selectedMovie ? (
         <SelectedMovie selectedMovie={selectedMovie} />
       ) : (
@@ -271,9 +371,19 @@ function SelectedMovie({ selectedMovie }) {
   return (
     <div className="details">
       <img src={selectedMovie.Poster} alt={selectedMovie.imdbID} />
-      <h4>{selectedMovie.Title}</h4>
-      <p>{selectedMovie.Year}</p>
-      <StarRating maxRating={5} messages={messages} defaultRating={2} />
+      <section>
+        <h4>{selectedMovie.Title}</h4>
+        <p>{selectedMovie.Year}</p>
+        <StarRating maxRating={5} messages={messages} defaultRating={2} />
+      </section>
     </div>
+  );
+}
+
+function Loader() {
+  return (
+    <>
+      <p className="loader">Loading...</p>
+    </>
   );
 }
