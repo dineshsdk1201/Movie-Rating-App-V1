@@ -14,7 +14,7 @@ export default function StarRating({
   color = "yellow",
   size = 48,
   messages = [],
-  defaultRating,
+  defaultRating = 2,
 }) {
   const [rating, setRating] = useState(defaultRating);
   const [tempRating, setTempRating] = useState(0);
@@ -47,7 +47,7 @@ export default function StarRating({
             : rating + 1}
         </p>
       ) : (
-        <p>{rating + 1}</p>
+        <p>{rating}</p>
       )}
     </div>
   );
