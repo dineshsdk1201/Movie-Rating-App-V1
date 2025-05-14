@@ -195,6 +195,10 @@ function NumResults({ movies }) {
 
 function Main({ selectedId, movies, handleSelect, isLoading, error }) {
   const [watched, setWatched] = useState(tempWatchedData);
+
+  function handleAddMovie(movie) {
+    setWatched((movies) => [...movies, movie]);
+  }
   // console.log(error);
   return (
     <main className="main">
@@ -230,6 +234,7 @@ function Main({ selectedId, movies, handleSelect, isLoading, error }) {
           selectedId={selectedId}
           watched={watched}
           isLoading={isLoading}
+          handleAddMovie={handleAddMovie}
         />
       </Box>
     </main>
@@ -288,7 +293,7 @@ function Movie({ movie, handleSelect }) {
   );
 }
 
-function WatchedList({ selectedId, watched, isLoading }) {
+function WatchedList({ selectedId, watched, isLoading, handleAddMovie }) {
   // const [isOpen2, setIsOpen2] = useState(true);
   console.log(selectedId);
   return (
@@ -301,7 +306,11 @@ function WatchedList({ selectedId, watched, isLoading }) {
       </button> */}
       {selectedId ? "" : <WatchedSummary watched={watched} />}
       {selectedId ? (
-        <SelectedMovie selectedId={selectedId} isLoading={isLoading} />
+        <SelectedMovie
+          selectedId={selectedId}
+          isLoading={isLoading}
+          handleAddMovie={handleAddMovie}
+        />
       ) : (
         <>
           <WatchedMovieList watched={watched} />
@@ -371,7 +380,7 @@ function WatchedMovie({ movie }) {
   );
 }
 
-function SelectedMovie({ selectedId, isLoading }) {
+function SelectedMovie({ selectedId, isLoading, handleAddMovie }) {
   const messages = ["Terrible", "Bad", "Okay", "Good", "Excellent"];
   const [movie, setMovie] = useState({});
   console.log(movie);
@@ -387,6 +396,8 @@ function SelectedMovie({ selectedId, isLoading }) {
     Director: director,
     Genre: genre,
   } = movie;
+  console.log(movie.Director);
+
   useEffect(
     function () {
       async function getMovieById(id) {
@@ -429,8 +440,11 @@ function SelectedMovie({ selectedId, isLoading }) {
               <em>{plot}</em>
             </p>
             <p>Starring {actors}</p>
-            <p>Directed by {director}</p>
-            <StarRating maxRating={5} color="red" />
+            <p>Directed by {movie.Director}</p>
+            <StarRating maxRating={5} color="red" messages={messages} />
+            <button className="btn-add" onClick={() => handleAddMovie(movie)}>
+              Add To Watchlist
+            </button>
           </section>
         </>
       )}
