@@ -15,8 +15,11 @@ export default function StarRating({
   size = 48,
   messages = [],
   defaultRating = 2,
+  rating,
+  setRating,
 }) {
-  const [rating, setRating] = useState(defaultRating);
+  console.log(rating);
+  // const [rating, setRating] = useState(defaultRating);
   const [tempRating, setTempRating] = useState(0);
   function handleRate(h) {
     console.log(h);
@@ -38,16 +41,14 @@ export default function StarRating({
           />
         ))}
       </div>
-      {messages.length === maxRating ? (
+      {messages.length === maxRating && (
         <p>
           {tempRating
             ? messages[tempRating - 1]
             : rating
             ? messages[rating - 1]
-            : rating + 1}
+            : rating}
         </p>
-      ) : (
-        <p>{rating}</p>
       )}
     </div>
   );
