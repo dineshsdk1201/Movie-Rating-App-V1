@@ -206,6 +206,7 @@ body {
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s;
+  color: white;
 }
 
 .btn-delete:hover {
