@@ -69,7 +69,10 @@ export default function App() {
     setSelectedId(null);
   }
   function handleAddMovie(movie) {
-    console.log(movie);
+    // console.log(movie);
+
+    // console.log(movie);
+    // console.log(latest);
     setWatched((movies) => [...movies, movie]);
     setSelectedId(null);
   }
@@ -330,6 +333,7 @@ function WatchedList({ selectedId, watched, handleAddMovie, handleBack }) {
           selectedId={selectedId}
           handleAddMovie={handleAddMovie}
           handleBack={handleBack}
+          watched={watched}
         />
       ) : (
         <>
@@ -406,11 +410,17 @@ function WatchedMovie({ movie }) {
   );
 }
 
-function SelectedMovie({ selectedId, handleAddMovie, handleBack }) {
+function SelectedMovie({ selectedId, handleAddMovie, handleBack, watched }) {
   const messages = ["Terrible", "Bad", "Okay", "Good", "Excellent"];
   const [movie, setMovie] = useState({});
   const [isLoad, setIsLoad] = useState(false);
   const [userRating, setUserRating] = useState(0);
+
+  const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
+  const WatchedUserRating = watched.find(
+    (movie) => movie.imdbID === selectedId
+  )?.userRating;
+
   console.log(userRating);
   console.log(movie);
   const {
@@ -424,6 +434,7 @@ function SelectedMovie({ selectedId, handleAddMovie, handleBack }) {
     Actors: actors,
     Director: director,
     Genre: genre,
+    imdbID,
   } = movie;
   console.log(movie.Director);
 
@@ -435,6 +446,7 @@ function SelectedMovie({ selectedId, handleAddMovie, handleBack }) {
       year,
       imdbRating,
       userRating,
+      imdbID,
     };
     handleAddMovie(NewWatchedMovie);
   }
@@ -481,16 +493,25 @@ function SelectedMovie({ selectedId, handleAddMovie, handleBack }) {
           </header>
           <section>
             <div className="rating">
-              <StarRating
-                maxRating={5}
-                color="red"
-                messages={messages}
-                rating={userRating}
-                setRating={setUserRating}
-              />
-              <button className="btn-add" onClick={handleAdd}>
-                Add To Watchlist
-              </button>
+              {!isWatched ? (
+                <>
+                  {" "}
+                  <StarRating
+                    maxRating={5}
+                    color="red"
+                    messages={messages}
+                    onSetRating={setUserRating}
+                    defaultRating={0}
+                  />
+                  {userRating > 0 && (
+                    <button className="btn-add" onClick={handleAdd}>
+                      Add To Watchlist
+                    </button>
+                  )}
+                </>
+              ) : (
+                <p>You already rated this movie with {WatchedUserRating}</p>
+              )}
             </div>
             <p>
               <em>{plot}</em>

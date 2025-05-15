@@ -15,15 +15,15 @@ export default function StarRating({
   size = 48,
   messages = [],
   defaultRating = 2,
-  rating,
-  setRating,
+  onSetRating,
 }) {
-  console.log(rating);
-  // const [rating, setRating] = useState(defaultRating);
+  // console.log(rating);
+  const [rating, setRating] = useState(defaultRating);
   const [tempRating, setTempRating] = useState(0);
   function handleRate(h) {
     console.log(h);
     setRating(h);
+    onSetRating(h);
   }
   return (
     <div style={containerStyle}>
