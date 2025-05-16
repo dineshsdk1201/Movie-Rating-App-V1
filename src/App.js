@@ -62,8 +62,13 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("inception");
-  const [watched, setWatched] = useState([]);
+  // const [watched, setWatched] = useState([]);
   // const query = "Interstellar";
+  const [watched, setWatched] = useState(function () {
+    const storedValue = localStorage.getItem("watched");
+    return JSON.parse(storedValue);
+  });
+
   function handleSelect(selected) {
     console.log(selected);
     setSelectedId(selected);
@@ -77,8 +82,10 @@ export default function App() {
     // console.log(movie);
     // console.log(latest);
     setWatched((movies) => [...movies, movie]);
+    // localStorage.setItem("watched", JSON.stringify([...watched, movie]));
     setSelectedId(null);
   }
+
   // useEffect(function () {
   //   async function fetchMovies() {
   //     try {
@@ -105,6 +112,13 @@ export default function App() {
   //   }
   //   fetchMovies();
   // }, []);
+
+  useEffect(
+    function () {
+      localStorage.setItem("watched", JSON.stringify(watched));
+    },
+    [watched]
+  );
 
   useEffect(
     function () {
@@ -367,6 +381,7 @@ function WatchedMovieList({ watched, setWatched }) {
     console.log(id);
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
+
   return (
     <ul className="list">
       {watched.map((movie) => (
