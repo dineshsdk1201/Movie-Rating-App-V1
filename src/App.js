@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import StarRating from "./StarRating";
 
 import { useMovies } from "./useMovies";
+import { useLocalStorageState } from "./useLocalStorageState";
 const tempMovieData = [
   {
     imdbID: "tt1375666",
@@ -58,10 +59,19 @@ export default function App() {
   const [query, setQuery] = useState("inception");
   // const [watched, setWatched] = useState([]);
   // const query = "Interstellar";
-  const [watched, setWatched] = useState(function () {
-    const storedValue = localStorage.getItem("watched");
-    return JSON.parse(storedValue);
-  });
+  // const [watched, setWatched] = useState(function () {
+  //   const storedValue = localStorage.getItem("watched");
+  //   return JSON.parse(storedValue);
+  // });
+
+  // useEffect(
+  //   function () {
+  //     localStorage.setItem("watched", JSON.stringify(watched));
+  //   },
+  //   [watched]
+  // );
+
+  const [watched, setWatched] = useLocalStorageState([]);
 
   const { movies, isLoading, error } = useMovies(query);
 
@@ -109,12 +119,6 @@ export default function App() {
   //   fetchMovies();
   // }, []);
 
-  useEffect(
-    function () {
-      localStorage.setItem("watched", JSON.stringify(watched));
-    },
-    [watched]
-  );
   return (
     <>
       <Navbar query={query} setQuery={setQuery} setSelectedId={setSelectedId}>
